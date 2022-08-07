@@ -21,7 +21,11 @@
     "declaration": true,
     "outDir": "dist",
     "declarationMap": true,
+    "sourceMap": true,
     "skipLibCheck": true
+  },
+  "buildOptions": {
+    "force": true
   },
   "include": ["src"],
   "exclude": ["**/*.spec.ts"]

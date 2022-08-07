@@ -4,7 +4,7 @@
   "description": "A functional, immutable, type safe and simple dependency injection library inspired by angular.",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc --sourceMap",
+    "build": "node ./scripts/build.mjs",
     "format": "prettier --write .",
     "start": "tsc -w",
     "test": "jest --coverage"
