@@ -36,11 +36,11 @@ export interface IoCContainer {
   /**
    * Request a dependency from the container.
    */
-  readonly request: <T>(this: void, token: Token<T>) => T;
+  readonly request: <T extends unknown>(this: void, token: Token<T>) => T;
   /**
    * Request dependencies of a `Consumer` and return its instance.
    */
-  readonly consume: <R>(this: void, consumer: GeneralConsumer<R>) => R;
+  readonly consume: <R extends unknown>(this: void, consumer: GeneralConsumer<R>) => R;
 }
 
 export type Solution<T> = Implementation<T> | GeneralInjectable<T>;
@@ -52,7 +52,7 @@ export interface Provider<T> {
 }
 
 export interface GeneralProvider extends Provider<unknown> {}
-export const provider = <T>(solution: Solution<T>, strategy: ResolveStrategy = ResolveStrategy.Stateful): Provider<T> =>
+export const provider = <T extends unknown>(solution: Solution<T>, strategy: ResolveStrategy = ResolveStrategy.Stateful): Provider<T> =>
   Object.freeze({
     type: "di-provider",
     solution,
@@ -60,8 +60,8 @@ export const provider = <T>(solution: Solution<T>, strategy: ResolveStrategy = R
   });
 
 export const provide = Object.freeze({
-  stateful: <T>(solution: Solution<T>): Provider<T> => provider(solution, ResolveStrategy.Stateful),
-  stateless: <T>(solution: GeneralInjectable<T>): Provider<T> => provider(solution, ResolveStrategy.Stateless),
+  stateful: <T extends unknown>(solution: Solution<T>): Provider<T> => provider(solution, ResolveStrategy.Stateful),
+  stateless: <T extends unknown>(solution: GeneralInjectable<T>): Provider<T> => provider(solution, ResolveStrategy.Stateless),
 });
 
 /**
@@ -106,7 +106,7 @@ const closure = (keyedProviders: KeyedProviders, parent?: IoCContainer): IoCCont
   };
   const fork = (providers?: GeneralProvider[]) => closure(newProviders(providers), result);
   const requestCache = new Map<Symbol, unknown>();
-  const request = <T>(token: Token<T>): T => {
+  const request = <T extends unknown>(token: Token<T>): T => {
     // @ts-expect-error Not type safe, but ensured type safe in user code because of immutability.
     const provider: Provider<T> = keyedProviders.get(token.key);
     if (!provider) {
@@ -139,7 +139,7 @@ const closure = (keyedProviders: KeyedProviders, parent?: IoCContainer): IoCCont
     }
     return result;
   };
-  const consume = <R>(consumer: GeneralConsumer<R>) => {
+  const consume = <R extends unknown>(consumer: GeneralConsumer<R>) => {
     const { dependencies, factory } = consumer;
     // @ts-expect-error Dynamic Implementation
     const context: Dependencies = Object.freeze(

@@ -20,11 +20,11 @@ export interface Injector<D extends Dependencies> {
   /**
    * Create an injectable based on the dependencies.
    */
-  readonly implements: <R>(this: void, token: Token<R>, factory: Injectable<D, R>["factory"]) => Injectable<D, R>;
+  readonly implements: <R extends unknown>(this: void, token: Token<R>, factory: Injectable<D, R>["factory"]) => Injectable<D, R>;
   /**
    * Create a consumer based on the dependencies.
    */
-  readonly for: <R>(this: void, factory: Consumer<D, R>["factory"]) => Consumer<D, R>;
+  readonly for: <R extends unknown>(this: void, factory: Consumer<D, R>["factory"]) => Consumer<D, R>;
 }
 
 type MergedDependencies<D extends Dependencies, AddOn extends Dependencies> = {
@@ -41,7 +41,7 @@ export const inject = <D extends Dependencies>(dependencies: D): Injector<D> =>
         ...dependencies,
         ...newMapping,
       }),
-    for: <R>(factory: Consumer<D, R>["factory"]) => consumer(dependencies, factory),
-    implements: <R>(token: Token<R>, factory: (context: InjectionContext<D>) => R) =>
+    for: <R extends unknown>(factory: Consumer<D, R>["factory"]) => consumer(dependencies, factory),
+    implements: <R extends unknown>(token: Token<R>, factory: (context: InjectionContext<D>) => R) =>
       injectable(token, dependencies, factory),
   });
