@@ -28,5 +28,10 @@
     "force": true
   },
   "include": ["src"],
-  "exclude": ["**/*.spec.ts"]
+  "exclude": ["**/*.spec.ts"],
+  "ts-node": {
+    "compilerOptions": {
+      "moduleResolution": "Node"
+    }
+  }
 }
