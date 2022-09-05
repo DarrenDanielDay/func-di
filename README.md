@@ -1,8 +1,12 @@
 # func-di
 
+English | [简体中文](./README.zh-CN.md)
+
+---
+
 [![Auto Test CI](https://github.com/DarrenDanielDay/func-di/actions/workflows/test.yml/badge.svg)](https://github.com/DarrenDanielDay/func-di/actions/) [![Publish CI](https://github.com/DarrenDanielDay/func-di/actions/workflows/publish.yml/badge.svg)](https://github.com/DarrenDanielDay/func-di/actions/) [![npm version](https://badge.fury.io/js/func-di.svg)](https://badge.fury.io/js/func-di)
 
-A functional, immutable, type safe and simple dependency injection library inspired by angular.
+A functional, immutable, type safe and simple dependency injection library inspired by [`Angular`](https://angular.io).
 
 - [Why func-di](#why-func-di)
 - [Installation](#installation)
@@ -43,7 +47,7 @@ See test cases for more details.
 
 ```typescript
 import { token, inject, factory, implementation, container, provide } from "func-di";
-// 0. Define your dependency with interface/type:
+// 0. Define dependency types with interface/type:
 interface ServiceA {
   foo(): number;
 }
@@ -126,7 +130,7 @@ You can also annotate your dependency token with generic type `Token` in this wa
 // @ts-check
 // ^^^^^^^^^ Use this directive to enable TypeScript checks in JavaScript code.
 import { token, inject, factory, implementation, container, provide } from "func-di";
-// 0. Define your dependency with interface/type:
+// 0. Define your dependency types with interface/type:
 /**
  * @typedef {{
  *  foo(): number;
