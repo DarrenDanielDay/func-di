@@ -104,8 +104,8 @@ const closure = (keyedProviders: KeyedProviders, parent?: IoCContainer): IoCCont
     registerProviders(providers, cloned);
     return closure(cloned, parent);
   };
-  const fork = (providers?: GeneralProvider[]) => closure(newProviders(providers), result);
-  const requestCache = new Map<Symbol, unknown>();
+  const fork = (providers?: GeneralProvider[]) => closure(newProviders(providers), containerInstance);
+  const requestCache = new Map<symbol, unknown>();
   const request = <T extends unknown>(token: Token<T>): T => {
     // @ts-expect-error Not type safe, but ensured type safe in user code because of immutability.
     const provider: Provider<T> = keyedProviders.get(token.key);
@@ -133,11 +133,11 @@ const closure = (keyedProviders: KeyedProviders, parent?: IoCContainer): IoCCont
       return solution.impl;
     }
     const { dependencies, factory } = solution;
-    const result = consume(consumer(dependencies, factory));
+    const dependencyInstance = consume(consumer(dependencies, factory));
     if (strategy === ResolveStrategy.Stateful) {
-      requestCache.set(solution.token.key, result);
+      requestCache.set(solution.token.key, dependencyInstance);
     }
-    return result;
+    return dependencyInstance;
   };
   const consume = <R extends unknown>(consumer: GeneralConsumer<R>) => {
     const { dependencies, factory } = consumer;
@@ -148,13 +148,13 @@ const closure = (keyedProviders: KeyedProviders, parent?: IoCContainer): IoCCont
     );
     return factory(context);
   };
-  const result: IoCContainer = {
+  const containerInstance: IoCContainer = {
     register,
     fork,
     request,
     consume,
   };
-  return Object.freeze(result);
+  return Object.freeze(containerInstance);
 };
 
 export const container = (providers?: GeneralProvider[]): IoCContainer => closure(newProviders(providers));
