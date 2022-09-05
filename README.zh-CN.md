@@ -6,7 +6,7 @@
 
 [![Auto Test CI](https://github.com/DarrenDanielDay/func-di/actions/workflows/test.yml/badge.svg)](https://github.com/DarrenDanielDay/func-di/actions/) [![Publish CI](https://github.com/DarrenDanielDay/func-di/actions/workflows/publish.yml/badge.svg)](https://github.com/DarrenDanielDay/func-di/actions/) [![npm version](https://badge.fury.io/js/func-di.svg)](https://badge.fury.io/js/func-di)
 
-一个受 [`Angular`](https://angular.cn) 启发的函数式、不可变、类型安全且简单的依赖注入库。
+一个受 [`Angular`](https://angular.cn/guide/dependency-injection) 启发的函数式、不可变、类型安全且简单的依赖注入库。
 
 - [为什么选择 func-di](#为什么选择func-di)
 - [安装](#安装)

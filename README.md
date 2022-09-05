@@ -6,7 +6,7 @@ English | [简体中文](./README.zh-CN.md)
 
 [![Auto Test CI](https://github.com/DarrenDanielDay/func-di/actions/workflows/test.yml/badge.svg)](https://github.com/DarrenDanielDay/func-di/actions/) [![Publish CI](https://github.com/DarrenDanielDay/func-di/actions/workflows/publish.yml/badge.svg)](https://github.com/DarrenDanielDay/func-di/actions/) [![npm version](https://badge.fury.io/js/func-di.svg)](https://badge.fury.io/js/func-di)
 
-A functional, immutable, type safe and simple dependency injection library inspired by [`Angular`](https://angular.io).
+A functional, immutable, type safe and simple dependency injection library inspired by [`Angular`](https://angular.io/guide/dependency-injection).
 
 - [Why func-di](#why-func-di)
 - [Installation](#installation)
