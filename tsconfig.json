@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "classic",
+    "moduleResolution": "Node",
     "esModuleInterop": true,
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
@@ -19,6 +19,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "declaration": true,
+    "jsx": "react",
     "outDir": "dist",
     "declarationMap": true,
     "sourceMap": true,
@@ -28,7 +29,7 @@
     "force": true
   },
   "include": ["src"],
-  "exclude": ["**/*.spec.ts"],
+  "exclude": ["**/*.spec.ts", "**/*.spec.tsx"],
   "ts-node": {
     "compilerOptions": {
       "moduleResolution": "Node"
