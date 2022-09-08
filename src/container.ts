@@ -30,6 +30,12 @@ export interface IoCContainer {
    */
   readonly register: (this: void, providers: GeneralProvider[]) => IoCContainer;
   /**
+   * Create a **NEW** container with providers overrides.
+   * No dynamic providers can be registered.
+   * You must switch to a new container if you want to add any dependency providers.
+   */
+  readonly override: (this: void, providers: GeneralProvider[]) => IoCContainer;
+  /**
    * Create a child container with this container as parent.
    */
   readonly fork: (this: void, providers?: GeneralProvider[]) => IoCContainer;
@@ -79,11 +85,11 @@ const emptyProviers = (): KeyedProviders => new Map();
 /**
  * @internal
  */
-const registerProviders = (providers: GeneralProvider[], keyedProviders: KeyedProviders) => {
+const registerProviders = (providers: GeneralProvider[], keyedProviders: KeyedProviders, allowOverrides?: boolean) => {
   for (const provider of providers) {
     const { solution } = provider;
     const { token } = solution;
-    if (keyedProviders.has(token.key)) {
+    if (keyedProviders.has(token.key) && !allowOverrides) {
       throw new Error(`Token ${tokenName(token)} already registered.`);
     }
     keyedProviders.set(token.key, provider);
@@ -104,6 +110,11 @@ const closure = (keyedProviders: KeyedProviders, parent?: IoCContainer): IoCCont
     registerProviders(providers, cloned);
     return closure(cloned, parent);
   };
+  const override = (providers: GeneralProvider[]) => {
+    const cloned = cloneProviders(keyedProviders);
+    registerProviders(providers, cloned, true);
+    return closure(cloned, parent)
+  }
   const fork = (providers?: GeneralProvider[]) => closure(newProviders(providers), containerInstance);
   const requestCache = new Map<symbol, unknown>();
   const request = <T extends unknown>(token: Token<T>): T => {
@@ -150,6 +161,7 @@ const closure = (keyedProviders: KeyedProviders, parent?: IoCContainer): IoCCont
   };
   const containerInstance: IoCContainer = {
     register,
+    override,
     fork,
     request,
     consume,

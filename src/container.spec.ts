@@ -55,6 +55,13 @@ describe("container.ts", () => {
         }).toThrow(/already registered/i);
       });
     });
+    describe("overrides", () => {
+      it("should override provider", () => {
+        const c = container([provide.stateful(serviceAImpl), provide.stateful(serviceBImpl)]);
+        const nc = c.override([provide.stateful(serviceBDirectImpl)]);
+        expect(nc.request(dependencyB).bar).toBe("777");
+      });
+    });
     describe("request", () => {
       it("should be lazy", () => {
         const c = container([provide.stateful(serviceBImpl), provide.stateful(serviceAImpl)]);
