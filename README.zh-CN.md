@@ -148,6 +148,57 @@ const dependencyB = token("ServiceB");
 // 接下来的步骤与 TypeScript 示例相同。
 ```
 
+### React 支持
+
+您可以用这些`API`将`func-di`与`React`组件连接起来。使用`Inject`创建消费者组件，使用`Provide`创建提供者组件。
+
+使用`Inject`并不会创建嵌套的高阶组件。您的渲染函数与依赖注入将在同一个组件的渲染逻辑内执行。
+
+使用`Provide`将会创建一个嵌套组件。它的内部只有一个`IoCContext.Provider`元素，并提供了相应的容器作为`value`。
+
+```tsx
+// 相关的依赖声明与实现
+import React from "react"
+import ReactDOM from "react-dom/client";
+import { Inject, Provide } from "func-di/react";
+interface CountService {
+  count: number;
+}
+interface MessageService {
+  renderMessage(tag: string): React.ReactElement;
+}
+const countService = token<CountService>("count");
+const rootCountImpl = implementation(countService, { count: 6 });
+const messageService = token<MessageService>("message");
+const msgImpl = inject({ countService }).implements(messageService, ({ countService }) => {
+  return {
+    renderMessage(tag) {
+      return (
+        <div>
+          <span>{tag}</span>
+          <span>{countService.count}</span>
+        </div>
+      );
+    },
+  };
+});
+
+// 创建消费者组件
+const CountMessage = Inject({ countService, messageService })
+  .props<{ tag: string }>()
+  .composed.fc(({ messageService, tag }) => messageService.renderMessage(tag));
+
+// 创建提供者组件
+const RootIoC = Provide([provide.stateful(rootCountImpl), provide.stateful(msgImpl)]).dependent();
+
+// 使用
+ReactDOM.createRoot(document.querySelector('#root')!).render(
+  <RootIoC>
+    <CountMessage tag="foo" />
+  </RootIoC>
+)
+```
+
 ## 许可证
 
 ```text

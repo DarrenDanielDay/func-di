@@ -148,6 +148,57 @@ const dependencyB = token("ServiceB");
 // The next steps are the same with the TypeScript example.
 ```
 
+### React Support
+
+You can use these `APIs` to connect `func-di` with `React` components. Use `Inject` to create consumer components and `Provide` to create provider components.
+
+Using `Inject` does not create nested HOCs. Your render function and dependency injection will be executed within the same component's render logic.
+
+Using `Provide` will create a nested component. It has only one `IoCContext.Provider` element inside and provides the corresponding container as `value`.
+
+```tsx
+// Relevant dependency declarations and implementations
+import React from "react"
+import ReactDOM from "react-dom/client";
+import { Inject, Provide } from "func-di/react";
+interface CountService {
+  count: number;
+}
+interface MessageService {
+  renderMessage(tag: string): React.ReactElement;
+}
+const countService = token<CountService>("count");
+const rootCountImpl = implementation(countService, { count: 6 });
+const messageService = token<MessageService>("message");
+const msgImpl = inject({ countService }).implements(messageService, ({ countService }) => {
+  return {
+    renderMessage(tag) {
+      return (
+        <div>
+          <span>{tag}</span>
+          <span>{countService.count}</span>
+        </div>
+      );
+    },
+  };
+});
+
+// Create a consumer component
+const CountMessage = Inject({ countService, messageService })
+  .props<{ tag: string }>()
+  .composed.fc(({ messageService, tag }) => messageService.renderMessage(tag));
+
+// Create a provider component
+const RootIoC = Provide([provide.stateful(rootCountImpl), provide.stateful(msgImpl)]).dependent();
+
+// Use
+ReactDOM.createRoot(document.querySelector('#root')!).render(
+  <RootIoC>
+    <CountMessage tag="foo" />
+  </RootIoC>
+)
+```
+
 ## License
 
 ```text
