@@ -8,11 +8,12 @@
 
 一个受 [`Angular`](https://angular.cn/guide/dependency-injection) 启发的函数式、不可变、类型安全且简单的依赖注入库。
 
-- [为什么选择 func-di](#为什么选择func-di)
+- [为什么选择 func-di](#为什么选择-func-di)
 - [安装](#安装)
 - [用法](#用法)
   - [TypeScript](#typescript)
   - [JavaScript](#javascript)
+  - [React 支持](#react-支持)
 - [许可证](#许可证)
 
 ## 为什么选择 func-di
@@ -158,7 +159,7 @@ const dependencyB = token("ServiceB");
 
 ```tsx
 // 相关的依赖声明与实现
-import React from "react"
+import React from "react";
 import ReactDOM from "react-dom/client";
 import { Inject, Provide } from "func-di/react";
 interface CountService {
@@ -192,11 +193,11 @@ const CountMessage = Inject({ countService, messageService })
 const RootIoC = Provide([provide.stateful(rootCountImpl), provide.stateful(msgImpl)]).dependent();
 
 // 使用
-ReactDOM.createRoot(document.querySelector('#root')!).render(
+ReactDOM.createRoot(document.querySelector("#root")!).render(
   <RootIoC>
     <CountMessage tag="foo" />
   </RootIoC>
-)
+);
 ```
 
 ## 许可证

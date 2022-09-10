@@ -13,6 +13,7 @@ A functional, immutable, type safe and simple dependency injection library inspi
 - [Usage](#usage)
   - [TypeScript](#typescript)
   - [JavaScript](#javascript)
+  - [React Support](#react-support)
 - [License](#license)
 
 ## Why func-di
@@ -158,7 +159,7 @@ Using `Provide` will create a nested component. It has only one `IoCContext.Prov
 
 ```tsx
 // Relevant dependency declarations and implementations
-import React from "react"
+import React from "react";
 import ReactDOM from "react-dom/client";
 import { Inject, Provide } from "func-di/react";
 interface CountService {
@@ -192,11 +193,11 @@ const CountMessage = Inject({ countService, messageService })
 const RootIoC = Provide([provide.stateful(rootCountImpl), provide.stateful(msgImpl)]).dependent();
 
 // Use
-ReactDOM.createRoot(document.querySelector('#root')!).render(
+ReactDOM.createRoot(document.querySelector("#root")!).render(
   <RootIoC>
     <CountMessage tag="foo" />
   </RootIoC>
-)
+);
 ```
 
 ## License
