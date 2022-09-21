@@ -4,39 +4,40 @@
 import "@testing-library/jest-dom";
 import React from "react";
 import PropTypes from "prop-types";
-import { Inject, Provide } from "./react";
+import { connectInjectionHooks, Inject, Provide, useContainer, useContainerRequest } from "./react";
 import { provide } from "./container";
 import { implementation, token } from "./token";
 import { inject } from "./inject";
 import { render, screen } from "@testing-library/react";
+import { useInjection } from "./hooks";
+
+interface CountService {
+  count: number;
+}
+interface MessageService {
+  renderMessage(tag: string): React.ReactElement;
+}
+const countService = token<CountService>("count");
+const rootCountImpl = implementation(countService, { count: 6 });
+const messageService = token<MessageService>("message");
+const msgImpl = inject({ countService }).implements(messageService, ({ countService }) => {
+  return {
+    renderMessage(tag) {
+      return (
+        <div>
+          <span>{tag}</span>
+          <span>{countService.count}</span>
+        </div>
+      );
+    },
+  };
+});
+
+const CountMessage = Inject({ countService, messageService })
+  .props<{ tag: string }>()
+  .composed.fc(({ messageService, tag }) => messageService.renderMessage(tag));
 
 describe("React higher ordered component", () => {
-  interface CountService {
-    count: number;
-  }
-  interface MessageService {
-    renderMessage(tag: string): React.ReactElement;
-  }
-  const countService = token<CountService>("count");
-  const rootCountImpl = implementation(countService, { count: 6 });
-  const messageService = token<MessageService>("message");
-  const msgImpl = inject({ countService }).implements(messageService, ({ countService }) => {
-    return {
-      renderMessage(tag) {
-        return (
-          <div>
-            <span>{tag}</span>
-            <span>{countService.count}</span>
-          </div>
-        );
-      },
-    };
-  });
-
-  const CountMessage = Inject({ countService, messageService })
-    .props<{ tag: string }>()
-    .composed.fc(({ messageService, tag }) => messageService.renderMessage(tag));
-
   it("should retrieve injected service instance", () => {
     const RootIoC = Provide([provide.stateful(rootCountImpl), provide.stateful(msgImpl)]).dependent();
     const App: React.FC = () => (
@@ -139,5 +140,70 @@ describe("React higher ordered component", () => {
     expect(screen.getByText("separated-fc").nextElementSibling).toHaveTextContent("0");
     expect(screen.getByText("composed-forward-ref").nextElementSibling).toHaveTextContent("0");
     expect(screen.getByText("separated-forward-ref").nextElementSibling).toHaveTextContent("0");
+  });
+});
+
+describe("React hooks", () => {
+  describe("connectInjectionHooks", () => {
+    it("should connect `useInjection` hooks", () => {
+      const Component: React.FC<{ foo: number }> = ({ foo }) => {
+        const { count } = useInjection(countService);
+        return (
+          <div>
+            <p>
+              <span>prop</span>
+              <span>{foo}</span>
+            </p>
+            <p>
+              <span>injection</span>
+              <span>{count}</span>
+            </p>
+          </div>
+        );
+      };
+      const ConnectedComponent = connectInjectionHooks(Component);
+      const RootProvider = Provide([provide.stateful(rootCountImpl)]).override();
+      render(
+        <RootProvider>
+          <ConnectedComponent foo={666} />
+        </RootProvider>
+      );
+      expect(screen.getByText("prop").nextElementSibling).toHaveTextContent("666");
+      expect(screen.getByText("injection").nextElementSibling).toHaveTextContent("6");
+    });
+
+    it("should preserve `displayName` and other info", () => {
+      const Component: React.FC = () => null;
+      Component.displayName = "Component";
+      Component.propTypes = {};
+      const connected = connectInjectionHooks(Component);
+      expect(connected.propTypes).toStrictEqual({});
+      expect(connected.displayName).toBe("Component");
+    });
+  });
+  describe("useContainer", () => {
+    it("should return container", () => {
+      const Component = () => {
+        const c = useContainer();
+        expect(typeof c.request).toBe("function");
+        return null;
+      };
+      render(<Component />);
+    });
+  });
+  describe("useContainerRequest", () => {
+    it("should request dependency", () => {
+      const Component = () => {
+        const c = useContainerRequest(countService);
+        expect(c).toStrictEqual({ count: 6 });
+        return null;
+      };
+      const RootProvider = Provide([provide.stateful(rootCountImpl)]).override();
+      render(
+        <RootProvider>
+          <Component />
+        </RootProvider>
+      );
+    });
   });
 });

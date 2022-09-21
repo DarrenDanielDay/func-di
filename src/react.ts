@@ -2,7 +2,9 @@ import type * as React from "react";
 import { createContext, useContext, memo, forwardRef, createElement, useMemo } from "react";
 import { consumer } from "./consumer";
 import { container, GeneralProvider, IoCContainer } from "./container";
+import { runInContainerScope } from "./hooks";
 import { Dependencies, InjectionContext } from "./inject";
+import { Token } from "./token";
 
 /**
  * The core DI context object of react.
@@ -168,3 +170,29 @@ export const Provide: ProvideClause = (() => {
   };
   return provideClause;
 })();
+
+/**
+ * Create a new component connectted with `useInjection` hook.
+ * React components cannot work directly with `useInjection` hook.
+ * This helper function wraps the execution context for the given component.
+ *
+ * @param component react functional component
+ * @returns a wrapped component
+ */
+export const connectInjectionHooks = <P extends {}>(component: React.FC<P>): React.FC<P> =>
+  Object.assign<React.FC<P>, PropsGuard<P>>(
+    (...args) => runInContainerScope(useContext(IoCContext), () => component(...args)),
+    component
+  );
+
+/**
+ * Short for `React.useContext(IoCContext)`.
+ */
+export const useContainer = (): IoCContainer => useContext(IoCContext);
+
+/**
+ * Short for `React.useContext(IoCContext).request(token)`. 
+ * @param token DI token
+ * @returns implementation provided by container
+ */
+export const useContainerRequest = <T extends unknown>(token: Token<T>): T => useContext(IoCContext).request(token);
