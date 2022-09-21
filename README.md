@@ -1,5 +1,7 @@
 # func-di
 
+![logo.png](./logo.png)
+
 English | [简体中文](./README.zh-CN.md)
 
 ---
