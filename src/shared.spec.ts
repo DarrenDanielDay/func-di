@@ -1,4 +1,4 @@
-describe("shared", () => {
+describe("shared.ts", () => {
   describe("in production mode", () => {
     const original = process.env.NODE_ENV;
     beforeEach(() => {
