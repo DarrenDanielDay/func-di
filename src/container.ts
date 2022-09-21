@@ -2,6 +2,7 @@ import type { Injectable } from "./injectable";
 import { consumer, type Consumer } from "./consumer";
 import type { Dependencies } from "./inject";
 import { type Implementation, type Token, tokenName } from "./token";
+import { freeze } from "./shared";
 
 export enum ResolveStrategy {
   /**
@@ -13,7 +14,7 @@ export enum ResolveStrategy {
    */
   Stateless = "stateless",
 }
-Object.freeze(ResolveStrategy);
+freeze(ResolveStrategy);
 /**
  * Typed depencencies as `any` for contravariance.
  */
@@ -59,13 +60,13 @@ export interface Provider<T> {
 
 export interface GeneralProvider extends Provider<unknown> {}
 export const provider = <T extends unknown>(solution: Solution<T>, strategy: ResolveStrategy = ResolveStrategy.Stateful): Provider<T> =>
-  Object.freeze({
+  freeze({
     type: "di-provider",
     solution,
     strategy,
   });
 
-export const provide = Object.freeze({
+export const provide = freeze({
   stateful: <T extends unknown>(solution: Solution<T>): Provider<T> => provider(solution, ResolveStrategy.Stateful),
   stateless: <T extends unknown>(solution: GeneralInjectable<T>): Provider<T> => provider(solution, ResolveStrategy.Stateless),
 });
@@ -152,8 +153,7 @@ const closure = (keyedProviders: KeyedProviders, parent?: IoCContainer): IoCCont
   };
   const consume = <R extends unknown>(consumer: GeneralConsumer<R>) => {
     const { dependencies, factory } = consumer;
-    // @ts-expect-error Dynamic Implementation
-    const context: Dependencies = Object.freeze(
+    const context: Dependencies = freeze(
       // @ts-expect-error Dynamic Implementation
       Object.fromEntries(Object.entries(dependencies).map(([name, dependency]) => [name, request(dependency)]))
     );
@@ -166,7 +166,7 @@ const closure = (keyedProviders: KeyedProviders, parent?: IoCContainer): IoCCont
     request,
     consume,
   };
-  return Object.freeze(containerInstance);
+  return freeze(containerInstance);
 };
 
 export const container = (providers?: GeneralProvider[]): IoCContainer => closure(newProviders(providers));

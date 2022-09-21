@@ -1,6 +1,7 @@
 import { injectable, type Injectable } from "./injectable";
 import { consumer, type Consumer } from "./consumer";
 import type { GeneralToken, Token, TokenType } from "./token";
+import { clone, freeze } from "./shared";
 
 export interface Dependencies {
   readonly [key: string]: GeneralToken;
@@ -32,9 +33,9 @@ type MergedDependencies<D extends Dependencies, AddOn extends Dependencies> = {
 };
 
 export const inject = <D extends Dependencies>(dependencies: D): Injector<D> =>
-  Object.freeze({
+  freeze({
     type: "di-injection",
-    dependencies: Object.freeze({ ...dependencies }),
+    dependencies: freeze(clone(dependencies)),
     with: <AddOn extends Dependencies>(newMapping: AddOn): Injector<MergedDependencies<D, AddOn>> =>
       // @ts-expect-error Dynamic Implementation
       inject({

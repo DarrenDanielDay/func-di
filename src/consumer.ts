@@ -1,4 +1,5 @@
 import type { Dependencies, InjectionContext } from "./inject";
+import { clone, freeze } from "./shared";
 
 /**
  * `Consumer` is someone who just consume the dependencies.
@@ -24,8 +25,8 @@ export const consumer = <D extends Dependencies, R>(
   dependencies: D,
   factory: Consumer<D, R>["factory"]
 ): Consumer<D, R> =>
-  Object.freeze({
+  freeze({
     type: "di-consumer",
-    dependencies: Object.freeze({ ...dependencies }),
+    dependencies: freeze(clone(dependencies)),
     factory,
   });

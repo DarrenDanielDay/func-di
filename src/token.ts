@@ -1,7 +1,9 @@
+import { freeze } from "./shared";
+
 /**
  * `Token` is a declaration of a specific dependency.
  */
-export interface Token<T> {
+export interface Token<T extends unknown> {
   readonly type: "di-token";
   readonly key: symbol;
   /**
@@ -22,7 +24,7 @@ export const token = <T extends unknown>(...args: [name: string, defaultImpl?: T
     key: Symbol(name),
     ...impl,
   };
-  return Object.freeze(result);
+  return freeze(result);
 };
 
 export const tokenName = (token: GeneralToken) => token.key.description!;
@@ -37,7 +39,7 @@ export interface Implementation<T> {
 }
 
 export const implementation = <T extends unknown>(token: Token<T>, impl: T): Implementation<T> =>
-  Object.freeze({
+  freeze({
     type: "di-impl",
     token,
     impl,

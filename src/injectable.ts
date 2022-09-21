@@ -1,4 +1,5 @@
 import type { Dependencies, InjectionContext } from "./inject";
+import { clone, freeze } from "./shared";
 import type { Token } from "./token";
 
 /**
@@ -19,10 +20,10 @@ export const injectable = <D extends Dependencies, R>(
   dependencies: D,
   factory: Injectable<D, R>["factory"]
 ): Injectable<D, R> =>
-  Object.freeze({
+  freeze({
     type: "di-injectable",
     token,
-    dependencies: Object.freeze({ ...dependencies }),
+    dependencies: freeze(clone(dependencies)),
     factory,
   });
 
