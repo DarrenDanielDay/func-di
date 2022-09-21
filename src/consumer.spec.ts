@@ -1,5 +1,5 @@
-import { consumer } from "./consumer";
-import { token } from "./token";
+import { consumer, dynamicConsumer } from "./consumer";
+import { token, __FUNC_DI_CONTAINER__ } from "./token";
 
 describe("comsumer.ts", () => {
   describe("consumer", () => {
@@ -11,6 +11,12 @@ describe("comsumer.ts", () => {
       expect(c.dependencies).toStrictEqual(dep);
       expect(Object.isFrozen(c)).toBe(true);
       expect(Object.isFrozen(c.dependencies)).toBe(true);
+    });
+  });
+  describe("dynamicConsumer", () => {
+    it("should have exactly one dependency", () => {
+      const deps = dynamicConsumer(() => {}).dependencies;
+      expect(deps).toStrictEqual({ c: __FUNC_DI_CONTAINER__ });
     });
   });
 });

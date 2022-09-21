@@ -11,6 +11,11 @@ describe("token.ts", () => {
       const t2 = token("1");
       expect(t1.key).not.toBe(t2.key);
     });
+    it("should create injectable", () => {
+      const t = token<{ foo: number }>("1");
+      const injectable = t.implementAs(() => ({ foo: 0 }));
+      expect(injectable.type === "di-injectable").toBe(true);
+    });
   });
   describe("token name", () => {
     it("should return the input string", () => {

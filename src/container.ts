@@ -1,7 +1,7 @@
 import type { Injectable } from "./injectable";
 import { consumer, type Consumer } from "./consumer";
 import type { Dependencies } from "./inject";
-import { type Implementation, type Token, tokenName } from "./token";
+import { type Implementation, type Token, tokenName, __FUNC_DI_CONTAINER__ } from "./token";
 import { freeze } from "./shared";
 
 export enum ResolveStrategy {
@@ -57,8 +57,10 @@ export interface Provider<T> {
   readonly solution: Solution<T>;
   readonly strategy: ResolveStrategy;
 }
-
-export interface GeneralProvider extends Provider<unknown> {}
+/**
+ * Typed depencencies as `any` for contravariance.
+ */
+export interface GeneralProvider extends Provider<any> {}
 export const provider = <T extends unknown>(solution: Solution<T>, strategy: ResolveStrategy = ResolveStrategy.Stateful): Provider<T> =>
   freeze({
     type: "di-provider",
@@ -119,6 +121,10 @@ const closure = (keyedProviders: KeyedProviders, parent?: IoCContainer): IoCCont
   const fork = (providers?: GeneralProvider[]) => closure(newProviders(providers), containerInstance);
   const requestCache = new Map<symbol, unknown>();
   const request = <T extends unknown>(token: Token<T>): T => {
+    if (token.key === __FUNC_DI_CONTAINER__.key) {
+      // @ts-expect-error Dynamic Implementation
+      return containerInstance;
+    }
     // @ts-expect-error Not type safe, but ensured type safe in user code because of immutability.
     const provider: Provider<T> = keyedProviders.get(token.key);
     if (!provider) {

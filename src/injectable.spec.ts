@@ -1,5 +1,5 @@
-import { injectable } from "./injectable";
-import { token } from "./token";
+import { dynamicInjectable, injectable } from "./injectable";
+import { token, __FUNC_DI_CONTAINER__ } from "./token";
 
 describe("injectable.ts", () => {
   describe("injectable", () => {
@@ -17,6 +17,12 @@ describe("injectable.ts", () => {
       expect(aInjectable.dependencies).not.toBe(deps);
       expect(aInjectable.dependencies).toStrictEqual(deps);
       expect(Object.isFrozen(aInjectable.dependencies)).toBe(true);
+    });
+  });
+  describe("dynamicInjectable", () => {
+    it("should inject exactly one container", () => {
+      const deps = dynamicInjectable(token(""), () => {}).dependencies;
+      expect(deps).toStrictEqual({ c: __FUNC_DI_CONTAINER__ });
     });
   });
 });

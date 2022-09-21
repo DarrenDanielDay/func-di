@@ -1,7 +1,8 @@
-import { factory } from "./injectable";
+import { dynamicInjectable, factory } from "./injectable";
 import { container, provide, provider } from "./container";
 import { inject } from "./inject";
 import { implementation, token } from "./token";
+import { dynamicConsumer } from "./consumer";
 
 interface ServiceA {
   foo(): number;
@@ -96,6 +97,21 @@ describe("container.ts", () => {
       it("should use direct implementation", () => {
         const c = container([provide.stateful(serviceBDirectImpl)]);
         expect(c.request(dependencyB)).toBe(serviceBDirectImpl.impl);
+      });
+      it("should pass itself to dynamic consumer", () => {
+        const c = container();
+        const dynamicConsumer1 = dynamicConsumer((ioc) => {
+          expect(ioc).toBe(c);
+        });
+        c.consume(dynamicConsumer1);
+      });
+      it("should pass itself to dynamic injectable", () => {
+        const t = token("");
+        const dynamicInjectable1 = dynamicInjectable(t, (ioc) => {
+          expect(ioc).toBe(c);
+        });
+        const c = container([provide.stateful(dynamicInjectable1)]);
+        c.request(t);
       });
     });
     describe("fork", () => {

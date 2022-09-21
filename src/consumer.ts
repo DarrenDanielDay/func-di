@@ -1,5 +1,8 @@
+import { IoCContainer } from "./container";
 import type { Dependencies, InjectionContext } from "./inject";
+import { DynamicInjectDependency } from "./injectable";
 import { clone, freeze } from "./shared";
+import { __FUNC_DI_CONTAINER__ } from "./token";
 
 /**
  * `Consumer` is someone who just consume the dependencies.
@@ -30,3 +33,6 @@ export const consumer = <D extends Dependencies, R>(
     dependencies: freeze(clone(dependencies)),
     factory,
   });
+
+export const dynamicConsumer = <R extends unknown>(factory: (container: IoCContainer) => R) =>
+  consumer<DynamicInjectDependency, R>({ c: __FUNC_DI_CONTAINER__ }, ({ c }) => factory(c));

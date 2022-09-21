@@ -1,3 +1,5 @@
+import type { IoCContainer } from "./container";
+import { dynamicInjectable, DynamicInjectDependency, Injectable } from "./injectable";
 import { freeze } from "./shared";
 
 /**
@@ -10,19 +12,24 @@ export interface Token<T extends unknown> {
    * The default implementation.
    */
   readonly default?: T;
+  /**
+   * @
+   */
+  readonly implementAs: (factory: (container: IoCContainer) => T) => Injectable<DynamicInjectDependency, T>;
 }
 
-export interface GeneralToken extends Token<unknown> {}
+export interface GeneralToken extends Token<any> {}
 
 export type TokenType<T extends GeneralToken> = T extends Token<infer U> ? U : never;
 
 export const token = <T extends unknown>(...args: [name: string, defaultImpl?: T]): Token<T> => {
   const [name, defaultImpl] = args;
-  const impl: Pick<Token<T>, "default"> = args.length === 1 ? {} : { default: defaultImpl };
+  const defaultImplProp: Pick<Token<T>, "default"> = args.length === 1 ? {} : { default: defaultImpl };
   const result: Token<T> = {
     type: "di-token",
     key: Symbol(name),
-    ...impl,
+    ...defaultImplProp,
+    implementAs: (factory) => dynamicInjectable(result, factory),
   };
   return freeze(result);
 };
@@ -44,3 +51,8 @@ export const implementation = <T extends unknown>(token: Token<T>, impl: T): Imp
     token,
     impl,
   });
+
+/**
+ * @internal
+ */
+export const __FUNC_DI_CONTAINER__ = token<IoCContainer>("container");
