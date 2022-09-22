@@ -1,6 +1,15 @@
 import type { IoCContainer } from "./container";
-import { dynamicInjectable, DynamicInjectDependency, Injectable } from "./injectable";
+import { injectable, type Injectable } from "./injectable";
 import { freeze } from "./shared";
+
+export type DynamicInjectDependency = {
+  c: Token<IoCContainer>;
+};
+
+export const dynamicInjectable = <R extends unknown>(
+  token: Token<R>,
+  func: (container: IoCContainer) => R
+): Injectable<DynamicInjectDependency, R> => injectable(token, { c: __FUNC_DI_CONTAINER__ }, ({ c }) => func(c));
 
 /**
  * `Token` is a declaration of a specific dependency.

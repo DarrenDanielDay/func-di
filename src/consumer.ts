@@ -1,8 +1,7 @@
 import { IoCContainer } from "./container";
 import type { Dependencies, InjectionContext } from "./inject";
-import { DynamicInjectDependency } from "./injectable";
 import { clone, freeze } from "./shared";
-import { __FUNC_DI_CONTAINER__ } from "./token";
+import { type DynamicInjectDependency, __FUNC_DI_CONTAINER__ } from "./token";
 
 /**
  * `Consumer` is someone who just consume the dependencies.

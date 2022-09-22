@@ -1,7 +1,7 @@
-import { dynamicInjectable, factory } from "./injectable";
+import { factory } from "./injectable";
 import { container, provide, provider } from "./container";
 import { inject } from "./inject";
-import { implementation, token } from "./token";
+import { dynamicInjectable, implementation, token } from "./token";
 import { dynamicConsumer } from "./consumer";
 
 interface ServiceA {

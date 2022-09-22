@@ -1,9 +1,9 @@
 import type * as React from "react";
 import { createContext, useContext, memo, forwardRef, createElement, useMemo } from "react";
 import { consumer } from "./consumer";
-import { container, GeneralProvider, IoCContainer } from "./container";
+import { container, type GeneralProvider, type IoCContainer } from "./container";
 import { runInContainerScope } from "./hooks";
-import { Dependencies, InjectionContext } from "./inject";
+import type { Dependencies, InjectionContext } from "./inject";
 import { Token } from "./token";
 
 /**
