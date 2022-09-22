@@ -46,7 +46,7 @@ npm install func-di # 或者其他包管理器
   }
 </script>
 <script type="module">
-  import { token, inject, container } from "https://unpkg.com/func-di"; // 或者其他CDN链接
+  import { token, inject, container } from "https://unpkg.com/func-di/dist/func-di.browser.esm.min.js"; // 或者其他CDN链接
   // 开箱即用的ES Module支持
 </script>
 ```

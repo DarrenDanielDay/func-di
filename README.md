@@ -45,7 +45,7 @@ Or no tool chain:
   }
 </script>
 <script type="module">
-  import { token, inject, container } from "https://unpkg.com/func-di"; // or other CDN URL
+  import { token, inject, container } from "https://unpkg.com/func-di/dist/func-di.browser.esm.min.js"; // or other CDN URL
   // Support ES module out of the box
 </script>
 ```
