@@ -4,6 +4,7 @@
   "description": "A functional, immutable, type safe and simple dependency injection library inspired by angular.",
   "main": "dist/index.js",
   "type": "module",
+  "sideEffects": false,
   "scripts": {
     "build": "ts-esmbuilder",
     "format": "prettier --write .",

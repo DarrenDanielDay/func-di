@@ -36,11 +36,21 @@ npm install func-di # or other package manager
 Or no tool chain:
 
 ```html
+<!-- use import map to make alias for `react` -->
+<script type="importmap">
+  {
+    "imports": {
+      "react": "https://unpkg.com/es-react"
+    }
+  }
+</script>
 <script type="module">
   import { token, inject, container } from "https://unpkg.com/func-di"; // or other CDN URL
   // Support ES module out of the box
 </script>
 ```
+
+If want to use React support in browser directly without `Node.JS` tool chain, add the following code before all script elements in your HTML. Note that `<script type="importmap">` is not currently supported in every modern browser (e.g. `FireFox`, `Safari`). You might need this tool: <https://github.com/guybedford/es-module-shims> for those browsers.
 
 ## Usage
 
@@ -170,7 +180,7 @@ Using `Provide` will create a nested component. It has only one `IoCContext.Prov
 // Relevant dependency declarations and implementations
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Inject, Provide } from "func-di/react";
+import { Inject, Provide } from "func-di";
 interface CountService {
   count: number;
 }
@@ -223,8 +233,7 @@ You can also use these hooks directly inside react components to get injected de
 
 ```tsx
 // Some of the same code as above has been omitted.
-import { useInjection } from 'func-di/hooks';
-import { connectInjectionHooks } from 'func-di/react';
+import { useInjection, connectInjectionHooks } from 'func-di';
 const Component: React.FC = () => {
   const { count } = useInjection(countService);
   return (
