@@ -73,6 +73,7 @@ const serviceAImpl = factory(dependencyA, () => {
   };
 });
 // Or implement a dependency factory with other injected dependency:
+// Inject as parameter of factory function:
 const serviceBImpl = inject({
   serviceA: dependencyA,
 }).implements(dependencyB, ({ serviceA }) => {
@@ -80,6 +81,12 @@ const serviceBImpl = inject({
     bar: serviceA.foo().toFixed(2),
   };
 });
+// Inject container itself as parameter of factory function:
+const serviceBImpl2 = dependencyB.implementAs(({ request }) => { 
+  return {
+    bar: request(dependencyA).foo().toFixed(2)
+  }
+})
 // Or implement a dependency with a direct instance:
 const serviceBDirectImpl = implementation(dependencyB, { bar: "777" });
 
@@ -198,6 +205,41 @@ const RootIoC = Provide([provide.stateful(rootCountImpl), provide.stateful(msgIm
 ReactDOM.createRoot(document.querySelector("#root")!).render(
   <RootIoC>
     <CountMessage tag="foo" />
+  </RootIoC>
+);
+```
+
+#### hooks
+
+> These APIs are still experimental and may be modified in the future.
+
+You can also use these hooks directly inside react components to get injected dependencies. Like normal hooks, they must be executed within the execution context of the react component.
+
+- `useContainer()`: get the IOC container
+- `useContainerRequest(token)`: get the IOC container and request dependency
+- `useInjection(token)`: get dependency within specific context
+
+`useInjection` is recommended. Please don't forget to wrap your component with `connectInjectionHooks` to get the correct execution context.
+
+```tsx
+// Some of the same code as above has been omitted.
+import { useInjection } from 'func-di/hooks';
+import { connectInjectionHooks } from 'func-di/react';
+const Component: React.FC = () => {
+  const { count } = useInjection(countService);
+  return (
+    <div>
+      <p>
+        <span>injection</span>
+        <span>{count}</span>
+      </p>
+    </div>
+  );
+};
+const ConnectedComponent = connectInjectionHooks(Component);
+ReactDOM.createRoot(document.querySelector("#another-root")).render(
+  <RootIoC>
+    <ConnectedComponent />
   </RootIoC>
 );
 ```

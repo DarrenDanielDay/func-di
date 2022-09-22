@@ -2,7 +2,6 @@
 
 ![logo.png](./logo.png)
 
-
 [English](./README.md) | 简体中文
 
 ---
@@ -17,6 +16,7 @@
   - [TypeScript](#typescript)
   - [JavaScript](#javascript)
   - [React 支持](#react-支持)
+    - [hooks](#hooks)
 - [许可证](#许可证)
 
 ## 为什么选择 func-di
@@ -74,11 +74,18 @@ const serviceAImpl = factory(dependencyA, () => {
   };
 });
 // 或者使用其他注入的依赖项实现依赖项工厂：
+// 注入依赖作为工厂函数的入参：
 const serviceBImpl = inject({
   serviceA: dependencyA,
 }).implements(dependencyB, ({ serviceA }) => {
   return {
     bar: serviceA.foo().toFixed(2),
+  };
+});
+// 注入整个容器自身作为入参：
+const serviceBImpl2 = dependencyB.implementAs(({ request }) => {
+  return {
+    bar: request(dependencyA).foo().toFixed(2),
   };
 });
 // 或者用直接的实例实现
@@ -199,6 +206,41 @@ const RootIoC = Provide([provide.stateful(rootCountImpl), provide.stateful(msgIm
 ReactDOM.createRoot(document.querySelector("#root")!).render(
   <RootIoC>
     <CountMessage tag="foo" />
+  </RootIoC>
+);
+```
+
+#### hooks
+
+> 这些 API 仍然是实验性的，并可能在未来被修改。
+
+您也可以在 react 组件内直接使用这些 hooks 来获取注入的依赖项。他们和普通的 hooks 一样，必须在 react 组件的执行上下文内执行。
+
+- `useContainer()`：获取容器
+- `useContainerRequest(token)`：获取容器并获取依赖项
+- `useInjection(token)`：在特定上下文内，获取依赖项
+
+推荐使用`useInjection`。请不要忘记使用`connectInjectionHooks`包裹您的组件，以获取正确的执行上下文。
+
+```tsx
+// 部分与上文相同的代码已被省略。
+import { useInjection } from "func-di/hooks";
+import { connectInjectionHooks } from "func-di/react";
+const Component: React.FC = () => {
+  const { count } = useInjection(countService);
+  return (
+    <div>
+      <p>
+        <span>injection</span>
+        <span>{count}</span>
+      </p>
+    </div>
+  );
+};
+const ConnectedComponent = connectInjectionHooks(Component);
+ReactDOM.createRoot(document.querySelector("#another-root")).render(
+  <RootIoC>
+    <ConnectedComponent />
   </RootIoC>
 );
 ```
