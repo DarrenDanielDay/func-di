@@ -50,7 +50,7 @@ Or no tool chain:
 </script>
 ```
 
-If want to use React support in browser directly without `Node.JS` tool chain, add the following code before all script elements in your HTML. Note that `<script type="importmap">` is not currently supported in every modern browser (e.g. `FireFox`, `Safari`). You might need this tool: <https://github.com/guybedford/es-module-shims> for those browsers.
+If want to use React support in browser directly without `Node.JS` tool chain, add the above code before all script elements in your HTML. Note that `<script type="importmap">` is not currently supported in every modern browser (e.g. `FireFox`, `Safari`). You might need this tool: <https://github.com/guybedford/es-module-shims> for those browsers.
 
 ## Usage
 

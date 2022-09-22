@@ -37,11 +37,21 @@ npm install func-di # 或者其他包管理器
 或者没有工具链：
 
 ```html
+<!-- 使用 import map 为 `react` 创建别名 -->
+<script type="importmap">
+  {
+    "imports": {
+      "react": "https://unpkg.com/es-react"
+    }
+  }
+</script>
 <script type="module">
   import { token, inject, container } from "https://unpkg.com/func-di"; // 或者其他CDN链接
   // 开箱即用的ES Module支持
 </script>
 ```
+
+如果想直接在浏览器中使用 React 支持而不使用 `Node.JS` 工具链，请在 HTML 中的所有脚本元素之前添加以上代码。 请注意，目前并非所有现代浏览器都支持`<script type="importmap">`（例如`FireFox`、`Safari`）。 对于这些浏览器，您可能需要此工具：<https://github.com/guybedford/es-module-shims>。
 
 ## 用法
 
@@ -224,7 +234,7 @@ ReactDOM.createRoot(document.querySelector("#root")!).render(
 
 ```tsx
 // 部分与上文相同的代码已被省略。
-import { useInjection, connectInjectionHooks } from 'func-di';
+import { useInjection, connectInjectionHooks } from "func-di";
 const Component: React.FC = () => {
   const { count } = useInjection(countService);
   return (
