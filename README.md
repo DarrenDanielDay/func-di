@@ -88,7 +88,7 @@ const serviceBImpl = inject({
   serviceA: dependencyA,
 }).implements(dependencyB, function({ serviceA }) {
   // You can get the injected dependency via both parameter and `this` context.
-  assert.deepEqual(this.serviceA, serviceA);
+  assert.strictEqual(this.serviceA, serviceA);
   return {
     bar: serviceA.foo().toFixed(2),
   };
@@ -96,8 +96,10 @@ const serviceBImpl = inject({
 // Inject container itself as parameter of factory function:
 const serviceBImpl2 = dependencyB.implementAs(function (ioc) { 
   // You can get the IoC container instance via both parameter and `this` context.
-  assert.deepEqual(this, ioc);
-  // Functions on IoC container instances have nothing to do with `this` context. It's OK to destruct to use them as variables. Actually all functions of `func-di` have nothing to do with `this` context.
+  assert.strictEqual(this, ioc);
+  // Functions on IoC container instances have nothing to do with `this` context.
+  // It's OK to destruct to use them as variables.
+  // Actually all functions of `func-di` have nothing to do with `this` context.
   const { request } = ioc;
   return {
     bar: request(dependencyA).foo().toFixed(2)

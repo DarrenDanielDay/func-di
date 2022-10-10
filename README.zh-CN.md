@@ -89,7 +89,7 @@ const serviceBImpl = inject({
   serviceA: dependencyA,
 }).implements(dependencyB, function ({ serviceA }) {
   // 你可以通过参数或者this上下文来获取被注入的依赖。
-  assert.deepEqual(this.serviceA, serviceA);
+  assert.strictEqual(this.serviceA, serviceA);
   return {
     bar: serviceA.foo().toFixed(2),
   };
@@ -97,8 +97,10 @@ const serviceBImpl = inject({
 // 注入整个容器自身作为入参：
 const serviceBImpl2 = dependencyB.implementAs(function (ioc) {
   // 你可以通过参数或者`this`上下文来获取IoC容器实例。
-  assert.deepEqual(this, ioc);
-  // IoC容器上的函数与`this`上下文无关。将他们解构成变量使用是可以的。事实上`func-di`中的所有方法都是与`this`上下文无关的函数。
+  assert.strictEqual(this, ioc);
+  // IoC容器上的函数与`this`上下文无关。
+  // 将他们解构成变量使用是可以的。
+  // 事实上`func-di`中的所有函数都是与`this`上下文无关的函数。
   const { request } = ioc;
   return {
     bar: request(dependencyA).foo().toFixed(2),
