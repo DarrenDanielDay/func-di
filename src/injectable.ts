@@ -12,7 +12,7 @@ export interface Injectable<D extends Dependencies, R> {
   /**
    * Instance factory.
    */
-  readonly factory: (this: void, context: InjectionContext<D>) => R;
+  readonly factory: (this: InjectionContext<D>, context: InjectionContext<D>) => R;
 }
 
 export const injectable = <D extends Dependencies, R>(

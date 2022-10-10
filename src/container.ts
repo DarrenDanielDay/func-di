@@ -61,7 +61,10 @@ export interface Provider<T> {
  * Typed depencencies as `any` for contravariance.
  */
 export interface GeneralProvider extends Provider<any> {}
-export const provider = <T extends unknown>(solution: Solution<T>, strategy: ResolveStrategy = ResolveStrategy.Stateful): Provider<T> =>
+export const provider = <T extends unknown>(
+  solution: Solution<T>,
+  strategy: ResolveStrategy = ResolveStrategy.Stateful
+): Provider<T> =>
   freeze({
     type: "di-provider",
     solution,
@@ -70,7 +73,8 @@ export const provider = <T extends unknown>(solution: Solution<T>, strategy: Res
 
 export const provide = freeze({
   stateful: <T extends unknown>(solution: Solution<T>): Provider<T> => provider(solution, ResolveStrategy.Stateful),
-  stateless: <T extends unknown>(solution: GeneralInjectable<T>): Provider<T> => provider(solution, ResolveStrategy.Stateless),
+  stateless: <T extends unknown>(solution: GeneralInjectable<T>): Provider<T> =>
+    provider(solution, ResolveStrategy.Stateless),
 });
 
 /**
@@ -116,8 +120,8 @@ const closure = (keyedProviders: KeyedProviders, parent?: IoCContainer): IoCCont
   const override = (providers: GeneralProvider[]) => {
     const cloned = cloneProviders(keyedProviders);
     registerProviders(providers, cloned, true);
-    return closure(cloned, parent)
-  }
+    return closure(cloned, parent);
+  };
   const fork = (providers?: GeneralProvider[]) => closure(newProviders(providers), containerInstance);
   const requestCache = new Map<symbol, unknown>();
   const request = <T extends unknown>(token: Token<T>): T => {
@@ -163,7 +167,7 @@ const closure = (keyedProviders: KeyedProviders, parent?: IoCContainer): IoCCont
       // @ts-expect-error Dynamic Implementation
       Object.fromEntries(Object.entries(dependencies).map(([name, dependency]) => [name, request(dependency)]))
     );
-    return factory(context);
+    return factory.call(context, context);
   };
   const containerInstance: IoCContainer = {
     register,

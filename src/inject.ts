@@ -43,6 +43,6 @@ export const inject = <D extends Dependencies>(dependencies: D): Injector<D> =>
         ...newMapping,
       }),
     for: <R extends unknown>(factory: Consumer<D, R>["factory"]) => consumer(dependencies, factory),
-    implements: <R extends unknown>(token: Token<R>, factory: (context: InjectionContext<D>) => R) =>
+    implements: <R extends unknown>(token: Token<R>, factory: (this: InjectionContext<D>, context: InjectionContext<D>) => R) =>
       injectable(token, dependencies, factory),
   });

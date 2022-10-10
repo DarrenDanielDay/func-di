@@ -131,6 +131,25 @@ describe("container.ts", () => {
         c.consume(inject({ serviceA: dependencyA }).for(f));
         expect(f).toBeCalledTimes(1);
       });
+      it("should have this context", () => {
+        const fn = jest.fn();
+        const consumer = inject({ serviceA: dependencyA }).for(function () {
+          expect(this.serviceA.foo()).toBe(111);
+          fn();
+        });
+        const c = container([provide.stateful(serviceAImpl)]);
+        c.consume(consumer);
+        expect(fn).toBeCalledTimes(1);
+        const bImpl = dependencyB.implementAs(function () {
+          expect(this.request(dependencyA).foo()).toBe(111);
+          fn();
+          return {
+            bar: "616414",
+          };
+        });
+        expect(c.fork([provide.stateful(bImpl)]).request(dependencyB).bar).toBe("616414");
+        expect(fn).toBeCalledTimes(2);
+      });
     });
   });
 });

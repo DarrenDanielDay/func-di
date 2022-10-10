@@ -14,7 +14,7 @@ export interface Consumer<D extends Dependencies, R> {
   /**
    * Instance factory.
    */
-  readonly factory: (this: void, context: InjectionContext<D>) => R;
+  readonly factory: (this: InjectionContext<D>, context: InjectionContext<D>) => R;
 }
 
 /**
