@@ -1,6 +1,8 @@
 # func-di
 
-![logo.png](./logo.png)
+<div style="text-align: center">
+  <img src="./logo.png" />
+</div>
 
 English | [简体中文](./README.zh-CN.md)
 
@@ -86,7 +88,7 @@ const serviceAImpl = factory(dependencyA, () => {
 // Inject as parameter of factory function:
 const serviceBImpl = inject({
   serviceA: dependencyA,
-}).implements(dependencyB, function({ serviceA }) {
+}).implements(dependencyB, function ({ serviceA }) {
   // You can get the injected dependency via both parameter and `this` context.
   assert.strictEqual(this.serviceA, serviceA);
   return {
@@ -94,7 +96,7 @@ const serviceBImpl = inject({
   };
 });
 // Inject container itself as parameter of factory function:
-const serviceBImpl2 = dependencyB.implementAs(function (ioc) { 
+const serviceBImpl2 = dependencyB.implementAs(function (ioc) {
   // You can get the IoC container instance via both parameter and `this` context.
   assert.strictEqual(this, ioc);
   // Functions on IoC container instances have nothing to do with `this` context.
@@ -102,9 +104,9 @@ const serviceBImpl2 = dependencyB.implementAs(function (ioc) {
   // Actually all functions of `func-di` have nothing to do with `this` context.
   const { request } = ioc;
   return {
-    bar: request(dependencyA).foo().toFixed(2)
-  }
-})
+    bar: request(dependencyA).foo().toFixed(2),
+  };
+});
 // Or implement a dependency with a direct instance:
 const serviceBDirectImpl = implementation(dependencyB, { bar: "777" });
 
@@ -241,7 +243,7 @@ You can also use these hooks directly inside react components to get injected de
 
 ```tsx
 // Some of the same code as above has been omitted.
-import { useInjection, connectInjectionHooks } from 'func-di/hooks';
+import { useInjection, connectInjectionHooks } from "func-di/hooks";
 const Component: React.FC = () => {
   const { count } = useInjection(countService);
   return (
