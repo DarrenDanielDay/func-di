@@ -189,7 +189,7 @@ const dependencyB = token("ServiceB");
 // 相关的依赖声明与实现
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Inject, Provide } from "func-di";
+import { Inject, Provide } from "func-di/react";
 interface CountService {
   count: number;
 }
@@ -242,7 +242,7 @@ ReactDOM.createRoot(document.querySelector("#root")!).render(
 
 ```tsx
 // 部分与上文相同的代码已被省略。
-import { useInjection, connectInjectionHooks } from "func-di";
+import { useInjection, connectInjectionHooks } from "func-di/hooks";
 const Component: React.FC = () => {
   const { count } = useInjection(countService);
   return (

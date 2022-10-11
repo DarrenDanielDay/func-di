@@ -188,7 +188,7 @@ Using `Provide` will create a nested component. It has only one `IoCContext.Prov
 // Relevant dependency declarations and implementations
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Inject, Provide } from "func-di";
+import { Inject, Provide } from "func-di/react";
 interface CountService {
   count: number;
 }
@@ -241,7 +241,7 @@ You can also use these hooks directly inside react components to get injected de
 
 ```tsx
 // Some of the same code as above has been omitted.
-import { useInjection, connectInjectionHooks } from 'func-di';
+import { useInjection, connectInjectionHooks } from 'func-di/hooks';
 const Component: React.FC = () => {
   const { count } = useInjection(countService);
   return (
