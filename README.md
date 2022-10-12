@@ -38,7 +38,7 @@ npm install func-di # or other package manager
 Or no tool chain:
 
 ```html
-<!-- Use import map to make alias for `func-di` and `react`. -->
+<!-- Use `importmap` to make alias for `func-di`, `react`, `react-dom` and thier dependencies. -->
 <!-- You can choose any other CDN URL you'd like. -->
 <script type="importmap">
   {
@@ -46,19 +46,26 @@ Or no tool chain:
       "func-di": "https://unpkg.com/func-di/dist/index.browser.esm.min.js",
       "func-di/react": "https://unpkg.com/func-di/dist/react.browser.esm.min.js",
       "func-di/hooks": "https://unpkg.com/func-di/dist/hooks.browser.esm.min.js",
-      "react": "https://unpkg.com/es-react"
+      "react": "https://ga.jspm.io/npm:react@18.2.0/index.js",
+      "react-dom/client": "https://ga.jspm.io/npm:react-dom@18.2.0/index.js",
+      "process": "https://ga.jspm.io/npm:process@0.11.10/browser.js",
+      "scheduler": "https://ga.jspm.io/npm:scheduler@0.23.0/index.js"
     }
   }
 </script>
 <script type="module">
   import { token, inject, container } from "func-di";
-  import { Inject, Provide } from "func-di/react";
-  import { useInjection, connectInjectionHooks } from "func-di/hooks";
+  import { useInjection } from "func-di/hooks";
+  import { Inject, Provide, connectInjectionHooks } from "func-di/react";
+  import React from "react";
+  import ReactDOM from "react-dom/client";
   // Support ES module out of the box
 </script>
 ```
 
-If want to use React support in browser directly without `Node.JS` tool chain, add the above code before all script elements in your HTML. Note that `<script type="importmap">` is not currently supported in every modern browser (e.g. `FireFox`, `Safari`). You might need this tool: <https://github.com/guybedford/es-module-shims> for those browsers.
+> Tired of the `importmap` code? Try [es-modularize](https://github.com/DarrenDanielDay/es-modularize)!
+
+If want to use React support in browser directly without `Node.JS` tool chain, add the above `importmap` code before all script elements in your HTML. Note that `importmap` is not currently supported in every modern browser (e.g. `FireFox`, `Safari`). You might need this tool: <https://github.com/guybedford/es-module-shims> for those browsers.
 
 ## Usage
 
@@ -249,7 +256,8 @@ You can also use these hooks directly inside react components to get injected de
 
 ```tsx
 // Some of the same code as above has been omitted.
-import { useInjection, connectInjectionHooks } from "func-di/hooks";
+import { useInjection } from "func-di/hooks";
+import { connectInjectionHooks } from "func-di/react";
 const Component: React.FC = () => {
   const { count } = useInjection(countService);
   return (
