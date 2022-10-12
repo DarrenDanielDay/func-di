@@ -47,10 +47,24 @@
     "react-dom": ">=16.8"
   },
   "exports": {
-    ".": "./dist/index.js",
-    "./*": "./dist/*",
-    "./react": "./dist/react.js",
-    "./hooks": "./dist/hooks.js"
+    ".": {
+      "browser": "./dist/index.browser.min.js",
+      "node": "./dist/index.js",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./react": {
+      "browser": "./dist/react.browser.min.js",
+      "node": "./dist/react.js",
+      "import": "./dist/react.js",
+      "default": "./dist/react.js"
+    },
+    "./hooks": {
+      "browser": "./dist/hooks.browser.min.js",
+      "node": "./dist/hooks.js",
+      "import": "./dist/hooks.js",
+      "default": "./dist/hooks.js"
+    }
   },
   "devDependencies": {
     "@rollup/plugin-replace": "^4.0.0",

@@ -38,16 +38,22 @@ npm install func-di # or other package manager
 Or no tool chain:
 
 ```html
-<!-- use import map to make alias for `react` -->
+<!-- Use import map to make alias for `func-di` and `react`. -->
+<!-- You can choose any other CDN URL you'd like. -->
 <script type="importmap">
   {
     "imports": {
+      "func-di": "https://unpkg.com/func-di/dist/index.browser.esm.min.js",
+      "func-di/react": "https://unpkg.com/func-di/dist/react.browser.esm.min.js",
+      "func-di/hooks": "https://unpkg.com/func-di/dist/hooks.browser.esm.min.js",
       "react": "https://unpkg.com/es-react"
     }
   }
 </script>
 <script type="module">
-  import { token, inject, container } from "https://unpkg.com/func-di/dist/func-di.browser.esm.min.js"; // or other CDN URL
+  import { token, inject, container } from "func-di";
+  import { Inject, Provide } from "func-di/react";
+  import { useInjection, connectInjectionHooks } from "func-di/hooks";
   // Support ES module out of the box
 </script>
 ```
