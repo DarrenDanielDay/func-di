@@ -48,6 +48,16 @@ export interface IoCContainer {
    * Request dependencies of a `Consumer` and return its instance.
    */
   readonly consume: <R extends unknown>(this: void, consumer: GeneralConsumer<R>) => R;
+  /**
+   * Clear the instance caches and invoke `disposer` for injectable if present.
+   */
+  readonly clear: (this: void) => void;
+  /**
+   * Dispose the container and release its resources.
+   * When a container is disposed, it cannot handle dependency request any longer,
+   * that is, invoke `clear()` and mark itself as `disposed`.
+   */
+  readonly dispose: (this: void) => void;
 }
 
 export type Solution<T> = Implementation<T> | GeneralInjectable<T>;
@@ -111,18 +121,26 @@ const newProviders = (providers: GeneralProvider[] | undefined): KeyedProviders 
 /**
  * @internal
  */
-const closure = (keyedProviders: KeyedProviders, parent?: IoCContainer): IoCContainer => {
+const closure = (
+  keyedProviders: KeyedProviders,
+  parent?: IoCContainer,
+  notifyDisposed?: (self: IoCContainer) => {}
+): IoCContainer => {
   const register = (providers: GeneralProvider[]) => {
     const cloned = cloneProviders(keyedProviders);
     registerProviders(providers, cloned);
-    return closure(cloned, parent);
+    return closure(cloned, parent, childCleaner);
   };
   const override = (providers: GeneralProvider[]) => {
     const cloned = cloneProviders(keyedProviders);
     registerProviders(providers, cloned, true);
-    return closure(cloned, parent);
+    return closure(cloned, parent, childCleaner);
   };
-  const fork = (providers?: GeneralProvider[]) => closure(newProviders(providers), containerInstance);
+  const children = new Set<IoCContainer>();
+  const childCleaner = (child: IoCContainer) => children.delete(child);
+  const asChild = (ioc: IoCContainer) => (children.add(ioc), ioc);
+  const fork = (providers?: GeneralProvider[]) =>
+    asChild(closure(newProviders(providers), containerInstance, childCleaner));
   const requestCache = new Map<symbol, unknown>();
   const request = <T extends unknown>(token: Token<T>): T => {
     if (token.key === __FUNC_DI_CONTAINER__.key) {
@@ -169,12 +187,52 @@ const closure = (keyedProviders: KeyedProviders, parent?: IoCContainer): IoCCont
     );
     return factory.call(context, context);
   };
+  const clear = () => {
+    for (const [, provider] of keyedProviders) {
+      const { solution, strategy } = provider;
+      if (solution.type === "di-injectable" && strategy === ResolveStrategy.Stateful) {
+        const {
+          token: { key },
+          disposer,
+        } = solution;
+        if (requestCache.has(key)) {
+          try {
+            disposer?.call(void 0, requestCache.get(key));
+            requestCache.delete(key);
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      }
+    }
+  };
+  let disposed = false;
+  const disposedChecked =
+    <F extends (...args: any[]) => any>(fn: F): F =>
+    // @ts-expect-error Dynamic Implementation
+    (...args: Parameters<F>): ReturnType<F> => {
+      if (disposed) {
+        throw new Error("The container has been disposed.");
+      }
+      return fn(...args);
+    };
+  const dispose = () => {
+    clear();
+    keyedProviders.clear();
+    for (const child of children) {
+      child.dispose();
+    }
+    disposed = true;
+    notifyDisposed?.(containerInstance);
+  };
   const containerInstance: IoCContainer = {
-    register,
-    override,
-    fork,
-    request,
-    consume,
+    register: disposedChecked(register),
+    override: disposedChecked(override),
+    fork: disposedChecked(fork),
+    request: disposedChecked(request),
+    consume: disposedChecked(consume),
+    clear: disposedChecked(clear),
+    dispose: disposedChecked(dispose),
   };
   return freeze(containerInstance);
 };

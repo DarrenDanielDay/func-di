@@ -8,8 +8,10 @@ export type DynamicInjectDependency = {
 
 export const dynamicInjectable = <R extends unknown>(
   token: Token<R>,
-  func: (this: IoCContainer, container: IoCContainer) => R
-): Injectable<DynamicInjectDependency, R> => injectable(token, { c: __FUNC_DI_CONTAINER__ }, ({ c }) => func.call(c, c));
+  func: (this: IoCContainer, container: IoCContainer) => R,
+  disposer?: (this: void, instance: R) => void
+): Injectable<DynamicInjectDependency, R> =>
+  injectable(token, { c: __FUNC_DI_CONTAINER__ }, ({ c }) => func.call(c, c), disposer);
 
 /**
  * `Token` is a declaration of a specific dependency.
@@ -24,7 +26,10 @@ export interface Token<T extends unknown> {
   /**
    * @experimental
    */
-  readonly implementAs: (factory: (this: IoCContainer, container: IoCContainer) => T) => Injectable<DynamicInjectDependency, T>;
+  readonly implementAs: (
+    factory: (this: IoCContainer, container: IoCContainer) => T,
+    disposer?: (this: void, instance: T) => void
+  ) => Injectable<DynamicInjectDependency, T>;
 }
 
 export interface GeneralToken extends Token<any> {}
@@ -38,7 +43,7 @@ export const token = <T extends unknown>(...args: [name: string, defaultImpl?: T
     type: "di-token",
     key: Symbol(name),
     ...defaultImplProp,
-    implementAs: (factory) => dynamicInjectable(result, factory),
+    implementAs: (factory, disposer) => dynamicInjectable(result, factory, disposer),
   };
   return freeze(result);
 };

@@ -108,6 +108,10 @@ const serviceBImpl = inject({
   return {
     bar: serviceA.foo().toFixed(2),
   };
+},
+// 若要定义如何释放依赖项实例并释放资源，可以传递此可选函数参数。
+(instance) => {
+  console.log('dispose instance of ServiceB:', instance.bar);
 });
 // 注入整个容器自身作为入参：
 const serviceBImpl2 = dependencyB.implementAs(function (ioc) {
@@ -142,6 +146,15 @@ console.log(serviceB.bar); // 111.00
 const childContainer = iocContainer.fork([provide.stateful(serviceBDirectImpl)]);
 
 console.log(childContainer.request(dependencyB).bar); // 777
+
+// 6. 要释放有状态的实例，请调用`clear()`。要释放所有资源，请调用`dispose()`。
+// 请注意，`dispose()`也将释放其子容器。
+
+// 清除实例缓存。`stateful`提供者将在被请求时创建新实例。
+iocContainer.clear();     // 输出：dispose instance of ServiceB: 111.00
+// 清除实例缓存，注册的依赖项信息，并对其子容器执行`dispose()`。
+iocContainer.dispose();   
+// 调用`dispose()`后，此容器实例上的所有方法调用都将导致错误。
 ```
 
 ### JavaScript

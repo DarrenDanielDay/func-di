@@ -107,6 +107,10 @@ const serviceBImpl = inject({
   return {
     bar: serviceA.foo().toFixed(2),
   };
+},
+// To define how to dispose the dependency instance and release resources, you can pass an optional function.
+(instance) => {
+  console.log('dispose instance of ServiceB:', instance.bar);
 });
 // Inject container itself as parameter of factory function:
 const serviceBImpl2 = dependencyB.implementAs(function (ioc) {
@@ -141,6 +145,14 @@ console.log(serviceB.bar); // 111.00
 const childContainer = iocContainer.fork([provide.stateful(serviceBDirectImpl)]);
 
 console.log(childContainer.request(dependencyB).bar); // 777
+
+// 6. To release stateful instance, call `clear()`. To release all resources, call `dispose()`.
+// Note that `dispose()` will also dispose its child containers.
+// Clear instance cache. `stateful` providers will create new dependency instance when requested.
+iocContainer.clear();     // output: dispose instance of ServiceB: 111.00
+// Clear instance cache, registered dependency info and perform `dispose()` on its children.
+iocContainer.dispose();   
+// After calling `dispose()`, all calls of method on this container instance will result an error.
 ```
 
 ### JavaScript

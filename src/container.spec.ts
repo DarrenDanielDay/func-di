@@ -2,7 +2,7 @@ import { factory } from "./injectable";
 import { container, provide, provider } from "./container";
 import { inject } from "./inject";
 import { dynamicInjectable, implementation, token } from "./token";
-import { dynamicConsumer } from "./consumer";
+import { consumer, dynamicConsumer } from "./consumer";
 
 interface ServiceA {
   foo(): number;
@@ -28,7 +28,8 @@ const serviceBImpl = inject({
   };
 });
 const serviceBDirectImpl = implementation(dependencyB, { bar: "777" });
-
+const aDisposer = jest.fn<void, [a: ServiceA]>(() => {});
+const bDisposer = jest.fn<void, [b: ServiceB]>(() => {});
 describe("container.ts", () => {
   describe("container", () => {
     it("should be immutable", () => {
@@ -149,6 +150,130 @@ describe("container.ts", () => {
         });
         expect(c.fork([provide.stateful(bImpl)]).request(dependencyB).bar).toBe("616414");
         expect(fn).toBeCalledTimes(2);
+      });
+    });
+    describe("clear", () => {
+      const consoleError = jest.spyOn(console, "error").mockImplementation(() => {});
+      beforeEach(() => {
+        consoleError.mockClear();
+        aDisposer.mockClear();
+        bDisposer.mockClear();
+      });
+      it("should clear stateful solution cached instance, not stateless solution", () => {
+        const ta = token<ServiceA>("t1");
+        const instance: ServiceA = {
+          foo() {
+            return 1;
+          },
+        };
+        const ia = ta.implementAs(() => instance, aDisposer);
+
+        const tb = token<ServiceB>("t2");
+        const ib = tb.implementAs(() => ({ bar: "2" }), bDisposer);
+        const ioc = container([provide.stateful(ia), provide.stateless(ib)]);
+        ioc.request(ta);
+        ioc.request(tb);
+        ioc.dispose();
+        expect(aDisposer).toBeCalledTimes(1);
+        expect(aDisposer).toBeCalledWith(instance);
+        expect(bDisposer).not.toBeCalled();
+      });
+      it("should be able to create new stateful instance", () => {
+        const ioc = container([provide.stateful(serviceAImpl), provide.stateful(serviceBImpl)]);
+        const b1 = ioc.request(dependencyB);
+        const b2 = ioc.request(dependencyB);
+        expect(b1).toBe(b2);
+        ioc.clear();
+        const b3 = ioc.request(dependencyB);
+        expect(b3).toStrictEqual(b1);
+        expect(b3).not.toBe(b1);
+      });
+      it("should handle errors in clearing", () => {
+        const disposer = jest.fn((a: ServiceA) => {
+          if (a.foo()) {
+            throw new Error("");
+          }
+        });
+        const ioc = container([
+          provide.stateful(
+            factory(
+              dependencyA,
+              () => ({
+                foo() {
+                  return 1;
+                },
+              }),
+              disposer
+            )
+          ),
+        ]);
+        ioc.request(dependencyA);
+        expect(() => {
+          ioc.dispose();
+        }).not.toThrow();
+        expect(consoleError).toBeCalledTimes(1);
+        expect(disposer).toBeCalledTimes(1);
+      });
+    });
+    describe("dispose", () => {
+      beforeEach(() => {
+        aDisposer.mockClear();
+        bDisposer.mockClear();
+      });
+      it("should emit error when calling methods on a disposed container", () => {
+        const ioc = container();
+        ioc.dispose();
+        expect(() => {
+          ioc.clear();
+        }).toThrow(/disposed/);
+        expect(() => {
+          ioc.consume(consumer({}, () => {}));
+        }).toThrow(/disposed/);
+        expect(() => {
+          ioc.dispose();
+        }).toThrow(/disposed/);
+        expect(() => {
+          ioc.fork([]);
+        }).toThrow(/disposed/);
+        expect(() => {
+          ioc.override([]);
+        }).toThrow(/disposed/);
+        expect(() => {
+          ioc.register([]);
+        }).toThrow(/disposed/);
+        expect(() => {
+          ioc.request(dependencyA);
+        }).toThrow(/disposed/);
+      });
+      it("should dispose child containers as well", () => {
+        const father = container([
+          provide.stateful(
+            factory(
+              dependencyA,
+              () => ({
+                foo() {
+                  return 1;
+                },
+              }),
+              aDisposer
+            )
+          ),
+        ]);
+        const child1 = father.fork([
+          provide.stateful(inject({ serviceA: dependencyA }).implements(dependencyB, serviceBImpl.factory, bDisposer)),
+        ]);
+        const child2 = father.fork([
+          provide.stateful(inject({ serviceA: dependencyA }).implements(dependencyB, serviceBImpl.factory, bDisposer)),
+        ]);
+        child1.request(dependencyB);
+        child2.request(dependencyB);
+        child1.dispose();
+        expect(bDisposer).toBeCalledTimes(1);
+        expect(() => {
+          father.dispose();
+        }).not.toThrow();
+        expect(aDisposer).toBeCalledTimes(1);
+        expect(bDisposer).toBeCalledTimes(2);
       });
     });
   });

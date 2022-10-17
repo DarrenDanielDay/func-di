@@ -21,7 +21,12 @@ export interface Injector<D extends Dependencies> {
   /**
    * Create an injectable based on the dependencies.
    */
-  readonly implements: <R extends unknown>(this: void, token: Token<R>, factory: Injectable<D, R>["factory"]) => Injectable<D, R>;
+  readonly implements: <R extends unknown>(
+    this: void,
+    token: Token<R>,
+    factory: Injectable<D, R>["factory"],
+    disposer?: (this: void, instance: R) => void
+  ) => Injectable<D, R>;
   /**
    * Create a consumer based on the dependencies.
    */
@@ -43,6 +48,9 @@ export const inject = <D extends Dependencies>(dependencies: D): Injector<D> =>
         ...newMapping,
       }),
     for: <R extends unknown>(factory: Consumer<D, R>["factory"]) => consumer(dependencies, factory),
-    implements: <R extends unknown>(token: Token<R>, factory: (this: InjectionContext<D>, context: InjectionContext<D>) => R) =>
-      injectable(token, dependencies, factory),
+    implements: <R extends unknown>(
+      token: Token<R>,
+      factory: (this: InjectionContext<D>, context: InjectionContext<D>) => R,
+      disposer?: (this: void, instance: R) => void
+    ) => injectable(token, dependencies, factory, disposer),
   });
