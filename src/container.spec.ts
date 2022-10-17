@@ -36,6 +36,42 @@ describe("container.ts", () => {
       const c = container();
       expect(Object.isFrozen(c)).toBe(true);
     });
+    it("should detect circular dependency", () => {
+      const ia = inject({ dependencyA }).implements(dependencyB, () => serviceBDirectImpl.impl);
+      const ib = inject({ dependencyB }).implements(dependencyA, () => ({
+        foo() {
+          return 1;
+        },
+      }));
+      expect(() => {
+        container([provide.stateless(ia), provide.stateless(ib)]);
+      }).toThrow(/\[ServiceB\] -> \[ServiceA\] -> \[ServiceB\]/i);
+    });
+    it("should skip subtree in circular dependency check for performance", () => {
+      const [t1, t2, t3, t4] = Array.from({ length: 4 }, (_, i) => token(`token-${i}`));
+      const i1 = inject({ t2 }).implements(t1, () => 0);
+      const i2 = inject({ t3 }).implements(t2, () => 0);
+      const i3 = inject({}).implements(t3, () => 0);
+      const i4 = inject({ t1 }).implements(t4, () => 0);
+      // This case covers line 133 in `src/container.ts`.
+      container([provide.stateful(i1), provide.stateful(i2), provide.stateful(i3), provide.stateful(i4)]);
+    });
+    it("should not emit error when circular dependency is from", () => {
+      // It should emit dependency not found.
+      const ta = token("a");
+      const tb = token("b");
+      const ia = inject({ ta }).implements(tb, () => 0);
+      const ib = inject({ tb }).implements(ta, () => 1);
+      expect(() => {
+        const father = container([provide.stateful(ia)]);
+        father.fork([provide.stateful(ib)]);
+      }).not.toThrow();
+      expect(() => {
+        const father = container([provide.stateful(ia)]);
+        const child = father.fork([provide.stateful(ib)]);
+        child.request(dependencyA);
+      }).toThrow(/Cannot find provider/i);
+    });
   });
   describe("provider", () => {
     it("should be immutable", () => {

@@ -1,7 +1,7 @@
 import type { Injectable } from "./injectable";
 import { consumer, type Consumer } from "./consumer";
 import type { Dependencies } from "./inject";
-import { type Implementation, type Token, tokenName, __FUNC_DI_CONTAINER__ } from "./token";
+import { type Implementation, type Token, type GeneralToken, tokenName, __FUNC_DI_CONTAINER__ } from "./token";
 import { freeze } from "./shared";
 
 export enum ResolveStrategy {
@@ -118,6 +118,44 @@ const registerProviders = (providers: GeneralProvider[], keyedProviders: KeyedPr
  */
 const newProviders = (providers: GeneralProvider[] | undefined): KeyedProviders =>
   registerProviders(providers ?? [], emptyProviers());
+
+/**
+ * @internal
+ */
+const circularDepsCheck = (keyedProviders: KeyedProviders) => {
+  const seen = new Set<symbol>();
+  const passing = new Set<symbol>();
+  const path: GeneralToken[] = [];
+  const dfs = ({ solution }: GeneralProvider) => {
+    const token = solution.token;
+    const { key } = token;
+    if (seen.has(key)) {
+      return;
+    }
+    path.push(token);
+    if (passing.has(key)) {
+      throw new Error(`Circular dependency detected: ${path.map((node) => `[${tokenName(node)}]`).join(" -> ")}`);
+    }
+    if (solution.type === "di-injectable") {
+      passing.add(key);
+      const dependencies: Dependencies = solution.dependencies;
+      for (const { key: dependencyKey } of Object.values(dependencies)) {
+        const dependencyProvider = keyedProviders.get(dependencyKey);
+        if (dependencyProvider) {
+          dfs(dependencyProvider);
+        }
+      }
+      passing.delete(key);
+    }
+    path.pop();
+    seen.add(key);
+  };
+  for (const key of keyedProviders.values()) {
+    passing.clear();
+    dfs(key);
+  }
+};
+
 /**
  * @internal
  */
@@ -126,6 +164,7 @@ const closure = (
   parent?: IoCContainer,
   notifyDisposed?: (self: IoCContainer) => {}
 ): IoCContainer => {
+  circularDepsCheck(keyedProviders);
   const register = (providers: GeneralProvider[]) => {
     const cloned = cloneProviders(keyedProviders);
     registerProviders(providers, cloned);
