@@ -1,6 +1,6 @@
 {
   "name": "func-di",
-  "version": "1.4.0",
+  "version": "1.4.2",
   "description": "A functional, immutable, type safe and simple dependency injection library inspired by angular.",
   "main": "dist/index.js",
   "type": "module",
