@@ -1,6 +1,6 @@
 {
   "name": "func-di",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "A functional, immutable, type safe and simple dependency injection library inspired by angular.",
   "main": "dist/index.js",
   "type": "module",
@@ -48,21 +48,21 @@
   },
   "exports": {
     ".": {
-      "types":"./dist/index.d.ts",
+      "types": "./dist/index.d.ts",
       "browser": "./dist/index.browser.esm.min.js",
       "node": "./dist/index.js",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
     "./react": {
-      "types":"./dist/react.d.ts",
+      "types": "./dist/react.d.ts",
       "browser": "./dist/react.browser.esm.min.js",
       "node": "./dist/react.js",
       "import": "./dist/react.js",
       "default": "./dist/react.js"
     },
     "./hooks": {
-      "types":"./dist/hooks.d.ts",
+      "types": "./dist/hooks.d.ts",
       "browser": "./dist/hooks.browser.esm.min.js",
       "node": "./dist/hooks.js",
       "import": "./dist/hooks.js",
