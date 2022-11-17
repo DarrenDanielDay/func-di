@@ -8,7 +8,7 @@ describe("shared.ts", () => {
       process.env.NODE_ENV = original;
     });
     it("should have no effect", async () => {
-      const { clone, freeze } = await import("./shared");
+      const { clone, freeze } = await import("./shared.js");
       const obj = {};
       const freezeObj = freeze(obj);
       expect(freezeObj).toBe(obj);

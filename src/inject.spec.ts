@@ -1,5 +1,5 @@
-import { inject } from "./inject";
-import { token } from "./token";
+import { inject } from "./inject.js";
+import { token } from "./token.js";
 
 describe("inject.ts", () => {
   describe("inject", () => {

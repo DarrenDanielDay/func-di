@@ -29,7 +29,6 @@
     "force": true
   },
   "include": ["src"],
-  "exclude": ["**/*.spec.ts", "**/*.spec.tsx"],
   "ts-node": {
     "compilerOptions": {
       "moduleResolution": "Node"

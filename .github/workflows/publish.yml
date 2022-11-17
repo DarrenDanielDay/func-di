@@ -26,10 +26,10 @@ jobs:
           cache: "npm"
       - name: Install Dependencies
         run: npm install -f
-      - name: Test Project
-        run: npm run test
       - name: Build Project
         run: npm run build
+      - name: Test Project
+        run: npm run test
       - name: Publish NPM Package
         uses: JS-DevTools/npm-publish@v1
         with:

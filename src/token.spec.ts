@@ -1,4 +1,4 @@
-import { implementation, token, tokenName } from "./token";
+import { implementation, token, tokenName } from "./token.js";
 
 describe("token.ts", () => {
   describe("token", () => {

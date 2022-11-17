@@ -1,5 +1,5 @@
-import { consumer, dynamicConsumer } from "./consumer";
-import { token, __FUNC_DI_CONTAINER__ } from "./token";
+import { consumer, dynamicConsumer } from "./consumer.js";
+import { token, __FUNC_DI_CONTAINER__ } from "./token.js";
 
 describe("comsumer.ts", () => {
   describe("consumer", () => {

@@ -1,6 +1,6 @@
-import { container, provide } from "./container";
-import { runInContainerScope, useInjection } from "./hooks";
-import { implementation, token } from "./token";
+import { container, provide } from "./container.js";
+import { runInContainerScope, useInjection } from "./hooks.js";
+import { implementation, token } from "./token.js";
 describe("hooks.ts", () => {
   describe("stack scopes", () => {
     const dep = token<{}>("");

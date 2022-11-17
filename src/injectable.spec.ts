@@ -1,5 +1,5 @@
-import { injectable } from "./injectable";
-import { dynamicInjectable, token, __FUNC_DI_CONTAINER__ } from "./token";
+import { injectable } from "./injectable.js";
+import { dynamicInjectable, token, __FUNC_DI_CONTAINER__ } from "./token.js";
 
 describe("injectable.ts", () => {
   describe("injectable", () => {

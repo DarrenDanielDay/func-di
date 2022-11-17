@@ -4,12 +4,12 @@
 import "@testing-library/jest-dom";
 import React from "react";
 import PropTypes from "prop-types";
-import { connectInjectionHooks, Inject, Provide, useContainer, useContainerRequest } from "./react";
-import { provide } from "./container";
-import { implementation, token } from "./token";
-import { inject } from "./inject";
+import { connectInjectionHooks, Inject, Provide, useContainer, useContainerRequest } from "./react.js";
+import { provide } from "./container.js";
+import { implementation, token } from "./token.js";
+import { inject } from "./inject.js";
 import { render, screen } from "@testing-library/react";
-import { useInjection } from "./hooks";
+import { useInjection } from "./hooks.js";
 
 interface CountService {
   count: number;

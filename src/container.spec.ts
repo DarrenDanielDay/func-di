@@ -1,8 +1,9 @@
-import { factory } from "./injectable";
-import { container, provide, provider } from "./container";
-import { inject } from "./inject";
-import { dynamicInjectable, implementation, token } from "./token";
-import { consumer, dynamicConsumer } from "./consumer";
+
+import { factory } from "./injectable.js";
+import { container, provide, provider } from "./container.js";
+import { inject } from "./inject.js";
+import { dynamicInjectable, implementation, token } from "./token.js";
+import { consumer, dynamicConsumer } from "./consumer.js";
 
 interface ServiceA {
   foo(): number;
@@ -28,8 +29,8 @@ const serviceBImpl = inject({
   };
 });
 const serviceBDirectImpl = implementation(dependencyB, { bar: "777" });
-const aDisposer = jest.fn<void, [a: ServiceA]>(() => {});
-const bDisposer = jest.fn<void, [b: ServiceB]>(() => {});
+const aDisposer = import.meta.jest.fn<void, [a: ServiceA]>(() => {});
+const bDisposer = import.meta.jest.fn<void, [b: ServiceB]>(() => {});
 describe("container.ts", () => {
   describe("container", () => {
     it("should be immutable", () => {
@@ -161,7 +162,7 @@ describe("container.ts", () => {
     });
     describe("consume", () => {
       it("should consume directly", () => {
-        const f = jest.fn(({ serviceA }: { serviceA: ServiceA }) => {
+        const f = import.meta.jest.fn(({ serviceA }: { serviceA: ServiceA }) => {
           return serviceA.foo();
         });
         const c = container([provide.stateful(serviceAImpl)]);
@@ -169,7 +170,7 @@ describe("container.ts", () => {
         expect(f).toBeCalledTimes(1);
       });
       it("should have this context", () => {
-        const fn = jest.fn();
+        const fn = import.meta.jest.fn();
         const consumer = inject({ serviceA: dependencyA }).for(function () {
           expect(this.serviceA.foo()).toBe(111);
           fn();
@@ -189,7 +190,7 @@ describe("container.ts", () => {
       });
     });
     describe("clear", () => {
-      const consoleError = jest.spyOn(console, "error").mockImplementation(() => {});
+      const consoleError = import.meta.jest.spyOn(console, "error").mockImplementation(() => {});
       beforeEach(() => {
         consoleError.mockClear();
         aDisposer.mockClear();
@@ -225,7 +226,7 @@ describe("container.ts", () => {
         expect(b3).not.toBe(b1);
       });
       it("should handle errors in clearing", () => {
-        const disposer = jest.fn((a: ServiceA) => {
+        const disposer = import.meta.jest.fn((a: ServiceA) => {
           if (a.foo()) {
             throw new Error("");
           }
