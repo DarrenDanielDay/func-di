@@ -1,6 +1,6 @@
-import type { Dependencies, InjectionContext } from "./inject";
-import { clone, freeze } from "./shared";
-import type { Token } from "./token";
+import type { Dependencies, InjectionContext } from "./inject.js";
+import { clone, freeze } from "./shared.js";
+import type { Token } from "./token.js";
 
 /**
  * `Injectable` is someone who asks for dependencies and implements something.

@@ -1,5 +1,5 @@
-import type { IoCContainer } from "./container";
-import type { Token } from "./token";
+import type { IoCContainer } from "./container.js";
+import type { Token } from "./token.js";
 
 const containerScopes: IoCContainer[] = [];
 

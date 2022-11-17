@@ -1,6 +1,6 @@
-export * from "./injectable";
-export * from "./consumer";
-export * from "./container";
-export * from "./inject";
-export * from "./token";
+export * from "./injectable.js";
+export * from "./consumer.js";
+export * from "./container.js";
+export * from "./inject.js";
+export * from "./token.js";
 /** For browser react bundle */

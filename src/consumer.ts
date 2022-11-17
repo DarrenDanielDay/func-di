@@ -1,7 +1,7 @@
-import { IoCContainer } from "./container";
-import type { Dependencies, InjectionContext } from "./inject";
-import { clone, freeze } from "./shared";
-import { type DynamicInjectDependency, __FUNC_DI_CONTAINER__ } from "./token";
+import { IoCContainer } from "./container.js";
+import type { Dependencies, InjectionContext } from "./inject.js";
+import { clone, freeze } from "./shared.js";
+import { type DynamicInjectDependency, __FUNC_DI_CONTAINER__ } from "./token.js";
 
 /**
  * `Consumer` is someone who just consume the dependencies.

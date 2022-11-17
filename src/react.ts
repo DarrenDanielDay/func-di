@@ -1,10 +1,10 @@
 import type * as React from "react";
 import { createContext, useContext, memo, forwardRef, createElement, useMemo } from "react";
-import { consumer } from "./consumer";
-import { container, type GeneralProvider, type IoCContainer } from "./container";
-import { runInContainerScope } from "./hooks";
-import type { Dependencies, InjectionContext } from "./inject";
-import { Token } from "./token";
+import { consumer } from "./consumer.js";
+import { container, type GeneralProvider, type IoCContainer } from "./container.js";
+import { runInContainerScope } from "./hooks.js";
+import type { Dependencies, InjectionContext } from "./inject.js";
+import { Token } from "./token.js";
 
 /**
  * The core DI context object of react.

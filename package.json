@@ -37,6 +37,7 @@
   },
   "homepage": "https://github.com/DarrenDanielDay/func-di#readme",
   "files": [
+    "tsconfig.json",
     "dist",
     "src"
   ],

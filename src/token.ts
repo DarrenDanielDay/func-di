@@ -1,6 +1,6 @@
-import type { IoCContainer } from "./container";
-import { injectable, type Injectable } from "./injectable";
-import { freeze } from "./shared";
+import type { IoCContainer } from "./container.js";
+import { injectable, type Injectable } from "./injectable.js";
+import { freeze } from "./shared.js";
 
 export type DynamicInjectDependency = {
   c: Token<IoCContainer>;

@@ -1,8 +1,8 @@
-import type { Injectable } from "./injectable";
-import { consumer, type Consumer } from "./consumer";
-import type { Dependencies } from "./inject";
-import { type Implementation, type Token, type GeneralToken, tokenName, __FUNC_DI_CONTAINER__ } from "./token";
-import { freeze } from "./shared";
+import type { Injectable } from "./injectable.js";
+import { consumer, type Consumer } from "./consumer.js";
+import type { Dependencies } from "./inject.js";
+import { type Implementation, type Token, type GeneralToken, tokenName, __FUNC_DI_CONTAINER__ } from "./token.js";
+import { freeze } from "./shared.js";
 
 export enum ResolveStrategy {
   /**

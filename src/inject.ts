@@ -1,7 +1,7 @@
-import { injectable, type Injectable } from "./injectable";
-import { consumer, type Consumer } from "./consumer";
-import type { GeneralToken, Token, TokenType } from "./token";
-import { clone, freeze } from "./shared";
+import { injectable, type Injectable } from "./injectable.js";
+import { consumer, type Consumer } from "./consumer.js";
+import type { GeneralToken, Token, TokenType } from "./token.js";
+import { clone, freeze } from "./shared.js";
 
 export interface Dependencies {
   readonly [key: string]: GeneralToken;
